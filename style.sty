@@ -1,0 +1,194 @@
+%%
+%% This is file 'style.sty',
+%% Copyright Aya Yousef
+%% Final Version - Silenced Logs
+%%
+
+%%% Sets fields, indents and line spacing %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[left=30mm, right=15mm, top=20mm, bottom=20mm]{geometry}
+\pagestyle{plain}       
+\parindent=1.25cm       
+\usepackage{indentfirst} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Language and Font Settings %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[english, russian]{babel}
+\babelfont{rm}{Times New Roman} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Aggressive Spacing Fixes (Silences Info Logs) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% We load microtype to actually improve the spacing
+\usepackage[final]{microtype}
+
+% We use \AtBeginDocument to ensure these settings overwrite everything else
+\AtBeginDocument{
+    \tolerance=10000            % Infinite tolerance for bad spacing (no warnings)
+    \hbadness=10000             % Suppress 'Underfull \hbox' messages completely
+    \vbadness=10000             % Suppress 'Underfull \vbox' messages completely
+    \emergencystretch=3em       % Allow extra stretching to prevent overflow
+    \hfuzz=5pt                  % Ignore 'Overfull \hbox' up to 5pt (silences tiny overflows)
+    \vfuzz=5pt                  % Ignore 'Overfull \vbox' up to 5pt
+    \sloppy                     % Be relaxed about line breaking rules
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Headings Style (Chapter, Section, Subsection) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setsecnumdepth{subsection}
+\renewcommand*{\chapterheadstart}{}
+\renewcommand*{\printchaptername}{}
+\renewcommand*{\chapnumfont}{\normalfont\bfseries}
+\renewcommand*{\afterchapternum}{\hspace{1em}}
+\renewcommand*{\printchaptertitle}{\normalfont\bfseries\centering\MakeUppercase}
+
+% --- SECTION SETTINGS ---
+\setbeforesecskip{20pt}
+\setsecindent{\parindent}
+\setaftersecskip{20pt}
+\setsecheadstyle{\raggedright\normalfont\bfseries}
+
+% --- SUBSECTION SETTINGS ---
+\setbeforesubsecskip{20pt}
+\setsubsecindent{\parindent}
+\setaftersubsecskip{10pt}
+\setsubsecheadstyle{\raggedright\normalfont}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Table of Contents (ToC) Settings %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\addto\captionsrussian{\renewcommand\contentsname{Содержание}}
+\setrmarg{2.55em plus1fil}
+\renewcommand{\aftertoctitle}{\afterchaptertitle \vspace{-\cftbeforechapterskip}}
+\renewcommand*{\cftchapternumwidth}{1.5em}
+\renewcommand*{\cftchapterfont}{\normalfont\MakeUppercase}
+\renewcommand*{\cftchapterpagefont}{\normalfont}
+\renewcommand*{\cftchapterdotsep}{\cftdotsep}
+\renewcommand*{\cftdotsep}{1}
+\renewcommand*{\cftchapterleader}{\cftdotfill{\cftchapterdotsep}}
+\maxtocdepth{subsection}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Russian Alphabet Enumeration Fix %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+    \def\russian@Alph#1{\ifcase#1\or
+       А\or Б\or В\or Г\or Д\or Е\or Ж\or
+       И\or К\or Л\or М\or Н\or
+       П\or Р\or С\or Т\or У\or Ф\or Х\or
+       Ц\or Ш\or Щ\or Э\or Ю\or Я\else\xpg@ill@value{#1}{russian@Alph}\fi}
+    \def\russian@alph#1{\ifcase#1\or
+       а\or б\or в\or г\or д\or е\or ж\or
+       и\or к\or л\or м\or н\or
+       п\or р\or с\or т\or у\or ф\or х\or
+       ц\or ш\or щ\or э\or ю\or я\else\xpg@ill@value{#1}{russian@alph}\fi}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Figures and Tables Settings (Memoir Native) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{images/}}
+
+\captionnamefont{\normalsize}        
+\captiontitlefont{\normalsize}       
+\captiondelim{ --- }            
+\captionwidth{\textwidth}       
+\changecaptionwidth
+\setfloatadjustment{table}{\captionstyle{\raggedright}}
+
+\addto\captionsrussian{\renewcommand{\figurename}{Рисунок}}
+
+\newsubfloat{figure}            
+\renewcommand{\thesubfigure}{\asbuk{subfigure})} 
+
+\usepackage[section]{placeins}  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Links and Hyperlinks %%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all,
+    linktocpage=true,
+    linkcolor=black,
+    urlcolor=black,
+    citecolor=black
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Lists (Enumitem) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{enumitem}
+\renewcommand*{\labelitemi}{\normalfont{--}}
+\makeatletter
+    \AddEnumerateCounter{\asbuk}{\russian@alph}
+\makeatother
+\renewcommand{\labelenumii}{\asbuk{enumii})}
+\renewcommand{\labelenumiii}{\arabic{enumiii})}
+\setlist{noitemsep, leftmargin=*}
+\setlist[1]{labelindent=\parindent}
+\setlist[2]{leftmargin=\parindent}
+\setlist[3]{leftmargin=\parindent}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Counters %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\counterwithout{figure}{chapter}
+\counterwithout{equation}{chapter}
+\counterwithout{table}{chapter}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Bibliography (BibLaTeX + Biber + GOST) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{csquotes}
+\usepackage{lipsum}
+\usepackage[
+    backend=biber,
+    bibencoding=utf8,
+    sorting=none,
+    style=gost-numeric,
+    language=auto,
+    autolang=other,
+    sortcites=true,
+    movenames=false,
+    maxnames=4,
+    minnames=4,
+    doi=true,
+    isbn=true,
+]{biblatex}
+
+\DeclareDelimFormat{bibinitdelim}{}
+\addbibresource{references.bib}
+
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map{
+        \step[fieldsource=title, match=\regexp{^\P{Cyrillic}*\p{Cyrillic}.*}, final]
+        \step[fieldset=langid, fieldvalue={russian}]
+    }
+    \map{
+        \step[fieldset=langid, fieldvalue={english}]
+    }
+  }
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Additional Utility Packages %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{longtable,ltcaption}
+\usepackage{multirow,makecell}
+\usepackage{booktabs}
+\usepackage{soul}
+\usepackage{icomma}
+\usepackage{hyphenat}
+\usepackage{textcomp}
+\usepackage[version=4]{mhchem}
+\usepackage{amsmath}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
