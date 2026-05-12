@@ -42,7 +42,7 @@
 
 Поддержка \textit{WebGPU} в разработанном приложении реализована через компонент \textit{WebGpuPanel}, предоставляющий возможность явного переключения между бэкендами. Состояние \textit{GPU}-подсистемы отслеживается через тип \textit{WebGpuState} с полями \textit{status} (\texttt{"checking"} | \texttt{"supported"} | \texttt{"unsupported"}) и \textit{enabled}; доступность \textit{WebGPU} на конкретном устройстве определяется асинхронной функцией \textit{detectWebGpu}, вызываемой при инициализации \textit{ClassifierContext}. Параметр \textit{useWebGpu} передаётся в воркер при загрузке модели через сообщение \textit{LOAD\_MODEL}, что позволяет функции \textit{getPipelineInstance} выбрать соответствующий бэкенд \textit{ONNX Runtime Web} без перезапуска воркера при смене настроек. По состоянию на 2024--2025 годы поддержка \textit{WebGPU} остаётся неравномерной: стандарт реализован в актуальных версиях \textit{Chromium}, однако на ряде мобильных платформ и в браузерах на базе \textit{Firefox} носит экспериментальный характер~\cite{jia2024empowering}. Большинство реализаций операторов \textit{ONNX Runtime Web} для \textit{WebGPU}-бэкенда оперируют числами одинарной точности (\textit{FP32}), что существенно увеличивает потребление видеопамяти по сравнению с режимом \textit{q8}. Переключение на \textit{WebGPU} блокируется автоматически при выборе модели с типом квантования \textit{q8}: соответствующий флаг \textit{webGpuBlockedByDtype} экспонируется через \textit{ClassifierContext} и используется интерфейсом для отображения предупреждения (рисунок~\ref{fig:webgpu_panel}).
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
     \parbox{0.48\textwidth}{%
         \centering
@@ -96,9 +96,9 @@
 
 Пользовательский интерфейс реализован на базе \textit{React} с применением хуков \textit{useState}, \textit{useEffect}, \textit{useRef}, \textit{useCallback} и \textit{useTransition}~\cite{xu2024ondevice}. Приложение структурировано как трёхуровневое \textit{SPA}: уровень представления (\textit{Presentation Layer}) --- компоненты \textit{BenchmarkView} и \textit{PlaygroundView} --- отвечает за отображение результатов; уровень оркестрации (\textit{Orchestration Layer}) --- \textit{ClassifierContext} и хук \textit{useBenchmark} --- управляет взаимодействием с воркером и хранением персистентных результатов; вычислительное ядро (\textit{Computation Layer}) целиком функционирует в фоновом потоке \textit{classifier.worker.ts} (рисунок~\ref{fig:spa_architecture}).
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\textwidth]{spa_architecture}
+    \includegraphics[width=0.95\textwidth]{spa_architecture}
     \caption{Трёхуровневая архитектура клиентского \textit{SPA}}
     \label{fig:spa_architecture}
 \end{figure}
