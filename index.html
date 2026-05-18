@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Архитектура клиентского приложения</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .mermaid {
+    width: 100%;
+    max-width: 1000px;
+  }
+</style>
+</head>
+<body>
+<div class="mermaid">
+%%{init: {'theme': 'default', 'themeVariables': {'background': '#ffffff', 'primaryColor': '#ffffff', 'primaryBorderColor': '#333333', 'primaryTextColor': '#000000', 'secondaryColor': '#fffde7', 'tertiaryColor': '#ffffff', 'noteBkgColor': '#fffde7', 'noteTextColor': '#000000', 'activationBkgColor': '#e3f2fd', 'activationBorderColor': '#333333', 'sequenceNumberColor': '#ffffff', 'actorBkg': '#ffffff', 'actorBorder': '#333333', 'actorTextColor': '#000000', 'loopTextColor': '#000000', 'labelBoxBkgColor': '#ffffff', 'labelBoxBorderColor': '#333333', 'labelTextColor': '#000000'}}}%%
+sequenceDiagram
+    autonumber
+    actor User as Пользователь
+    participant UI as Основной поток (React UI)
+    participant WW as Web Worker
+    participant ONNX as ONNX Runtime (WASM / WebGPU)
+    participant HF as Hugging Face Hub
+
+    note over UI,WW: Инициализация системы — spawnWorker() + detectWebGpu()
+
+    UI->>UI: detectWebGpu() → navigator.gpu probe
+    alt WebGPU доступен
+        UI-->>User: WebGpuPanel: toggle разблокирован
+    else WebGPU недоступен
+        UI-->>User: WebGpuPanel: toggle задизейблен
+    end
+
+    User->>UI: Выбор модели из выпадающего списка
+    User->>UI: Переключение WebGPU toggle → useWebGpu: bool
+    User->>UI: Нажатие «Load Model»
+    UI->>WW: LOAD_MODEL { modelId, useWebGpu }
+    WW->>HF: Запрос весов модели (ONNX + tokenizer)
+    HF-->>WW: Файлы модели (чанками)
+    WW-->>UI: PROGRESS { 0..100% }
+    WW->>WW: Компиляция графа (Singleton)
+
+    alt useWebGpu = true
+        WW->>ONNX: Инициализация WebGPU-бэкенда
+    else useWebGpu = false
+        WW->>ONNX: Инициализация WASM-бэкенда
+    end
+
+    WW-->>UI: MODEL_READY { load_time_ms, model_size_mb }
+    note over UI: Статус: Model Ready — интерфейс разблокирован
+
+    alt Playground — одиночный инференс
+        User->>UI: Ввод текста → нажатие «Classify»
+        UI->>WW: CLASSIFY { id, text, modelId }
+        WW->>WW: performance.now() — старт таймера
+        WW->>WW: Токенизация текста
+        WW->>ONNX: Передача тензоров (input_ids)
+        ONNX-->>WW: Возврат логитов (Logits)
+        WW->>WW: Softmax → label, score
+        WW->>WW: performance.now() — стоп таймера
+        WW->>WW: Замер памяти (usedJSHeapSize)
+        WW-->>UI: CLASSIFICATION_RESULT { label, score, time_ms }
+        UI-->>User: ResultCard — label, confidence, latency
+    else Benchmark Lab — пакетное тестирование
+        User->>UI: Загрузка JSON-датасета (parseDataset)
+        User->>UI: Нажатие «Run Benchmark»
+        loop N = 1..n (строгая очередь FIFO)
+            UI->>WW: CLASSIFY { id, text, modelId }
+            WW-->>UI: CLASSIFICATION_RESULT { label, score, time_ms }
+            UI->>UI: Накопление BenchmarkResult[]
+            UI-->>User: Обновление прогресс-бара (N / total)
+        end
+        UI->>UI: computeStats() — avg latency, accuracy, F1
+        UI-->>User: Таблица результатов + scatter-график на экране
+        User->>UI: Нажатие «Export CSV»
+        UI-->>User: Скачивание файла CSV (ExportRow[])
+    end
+</div>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
+    sequence: {
+      diagramMarginX: 20,
+      diagramMarginY: 20,
+      actorMargin: 60,
+      width: 150,
+      height: 65,
+      boxMargin: 10,
+      boxTextMargin: 5,
+      noteMargin: 10,
+      messageMargin: 35,
+      useMaxWidth: true
+    }
+  });
+</script>
+</body>
+</html>
