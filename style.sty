@@ -18,21 +18,9 @@
 \babelfont{rm}{Times New Roman} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Aggressive Spacing Fixes (Silences Info Logs) %%%
+%%% Microtype %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% We load microtype to actually improve the spacing
 \usepackage[final]{microtype}
-
-% We use \AtBeginDocument to ensure these settings overwrite everything else
-\AtBeginDocument{
-    \tolerance=10000            % Infinite tolerance for bad spacing (no warnings)
-    \hbadness=10000             % Suppress 'Underfull \hbox' messages completely
-    \vbadness=10000             % Suppress 'Underfull \vbox' messages completely
-    \emergencystretch=3em       % Allow extra stretching to prevent overflow
-    \hfuzz=5pt                  % Ignore 'Overfull \hbox' up to 5pt (silences tiny overflows)
-    \vfuzz=5pt                  % Ignore 'Overfull \vbox' up to 5pt
-    \sloppy                     % Be relaxed about line breaking rules
-}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Headings Style (Chapter, Section, Subsection) %%%
@@ -45,15 +33,11 @@
 \renewcommand*{\printchaptertitle}{\normalfont\bfseries\centering\MakeUppercase}
 
 % --- SECTION SETTINGS ---
-\setbeforesecskip{20pt}
 \setsecindent{\parindent}
-\setaftersecskip{20pt}
 \setsecheadstyle{\raggedright\normalfont\bfseries}
 
 % --- SUBSECTION SETTINGS ---
-\setbeforesubsecskip{20pt}
 \setsubsecindent{\parindent}
-\setaftersubsecskip{10pt}
 \setsubsecheadstyle{\raggedright\normalfont}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -61,7 +45,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addto\captionsrussian{\renewcommand\contentsname{Содержание}}
 \setrmarg{2.55em plus1fil}
-\renewcommand{\aftertoctitle}{\afterchaptertitle \vspace{-\cftbeforechapterskip}}
+\renewcommand{\aftertoctitle}{\afterchaptertitle \vspace{-\cftbeforechapterskip}\vspace{0.5\baselineskip}}
 \renewcommand*{\cftchapternumwidth}{1.5em}
 \renewcommand*{\cftchapterfont}{\normalfont\MakeUppercase}
 \renewcommand*{\cftchapterpagefont}{\normalfont}
@@ -73,6 +57,10 @@
 \renewcommand{\lofheadstart}{\centering}
 \renewcommand{\afterlottitle}{\vspace{10pt}}
 \renewcommand{\lotheadstart}{\centering}
+%% --- ToC vertical spacing (1.5 rhythm) ---
+\setlength{\cftbeforechapterskip}{0.5\baselineskip}%
+\setlength{\cftbeforesectionskip}{0.5\baselineskip}%
+\setlength{\cftbeforesubsectionskip}{0.5\baselineskip}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Russian Alphabet Enumeration Fix %%%
@@ -143,9 +131,10 @@
 \makeatletter
     \AddEnumerateCounter{\asbuk}{\russian@alph}
 \makeatother
+\renewcommand{\labelenumi}{\arabic{enumi})}
 \renewcommand{\labelenumii}{\asbuk{enumii})}
 \renewcommand{\labelenumiii}{\arabic{enumiii})}
-\setlist{noitemsep, leftmargin=*}
+\setlist{noitemsep, topsep=0pt, partopsep=0pt, leftmargin=*}
 \setlist[1]{labelindent=\parindent}
 \setlist[2]{leftmargin=\parindent}
 \setlist[3]{leftmargin=\parindent}
@@ -177,6 +166,14 @@
     isbn=true,
 ]{biblatex}
 
+%% --- Remove italic from author names ---
+\renewcommand*{\mkgostheading}[1]{#1}
+
+%% --- Remove monospace from DOI/URL ---
+\renewcommand{\UrlFont}{\rmfamily\normalsize}
+\DeclareFieldFormat{url}{\textnormal{\url{#1}}}
+\DeclareFieldFormat{eprint}{\textnormal{#1}}
+
 \DeclareDelimFormat{bibinitdelim}{}
 \addbibresource{references.bib}
 
@@ -204,6 +201,33 @@
 \usepackage{textcomp}
 \usepackage[version=4]{mhchem}
 \usepackage{amsmath}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% ALL spacing forced here — single AtBeginDocument, nothing can override %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtBeginDocument{%
+    %% --- Typography fixes ---
+    \tolerance=10000
+    \hbadness=10000
+    \vbadness=10000
+    \emergencystretch=3em
+    \hfuzz=5pt
+    \vfuzz=5pt
+    \sloppy
+    \hyphenpenalty=10000
+    \exhyphenpenalty=10000
+    %% --- Cancel parskip stacking ---
+    \setlength{\parskip}{0pt}%
+    %% --- Chapter heading spacing ---
+    \setlength{\beforechapskip}{0pt}%
+    \setlength{\afterchapskip}{6pt}%
+    %% --- Section spacing ---
+    \setlength{\beforesecskip}{18pt}%
+    \setlength{\aftersecskip}{6pt}%
+    %% --- Subsection spacing ---
+    \setlength{\beforesubsecskip}{18pt}%
+    \setlength{\aftersubsecskip}{6pt}%
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
