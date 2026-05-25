@@ -245,17 +245,24 @@ ALL & 0{,}7231 & 0{,}7222 & $-$0{,}0009 & 0{,}7233 & 0{,}7224 & $-$0{,}0009 & 13
 \caption{Ранжирование моделей по индексу браузерного развёртывания}
 \label{tab:browserscore}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llrrrr}
+\begin{tabular}{|l|l|r|r|r|r|}
 \hline
 \textbf{Ранг} & \textbf{Модель} & \textbf{Ovrl F1} & \textbf{Сред. зад. (мс)} & \textbf{Размер (МБ)} & \textbf{Browser Score} \\
 \hline
 1 & DistilmBERT FT (ayayousef, INT8)     & 0{,}7224 &  94{,}91 &    135{,}8 & 0{,}998 \\
+\hline
 2 & DistilmBERT FT (ayayousef, FP32)     & 0{,}7233 & 136{,}76 &    541{,}4 & 0{,}879 \\
+\hline
 3 & mBERT (Xenova, INT8)                  & 0{,}6006 & 192{,}36 &    168{,}6 & 0{,}514 \\
+\hline
 4 & DistilmBERT Student (Xenova, INT8)   & 0{,}4237 &  98{,}71 &    136{,}0 & 0{,}489 \\
+\hline
 5 & DistilmBERT Student (Xenova, FP32)   & 0{,}4282 & 136{,}57 &    541{,}4 & 0{,}387 \\
+\hline
 6 & XLM-RoBERTa (onnx-community, INT8)   & 0{,}5202 & 190{,}01 &    279{,}3 & 0{,}386 \\
+\hline
 7 & mBERT (Xenova, FP32)                  & 0{,}6034 & 266{,}86 &    669{,}7 & 0{,}303 \\
+\hline
 8 & XLM-RoBERTa (onnx-community, FP32)   & 0{,}5281 & 268{,}08 & 1\,112{,}5 & 0{,}174 \\
 \hline
 \end{tabular}%
@@ -291,18 +298,26 @@ T_\text{total} = T_\text{network} + T_\text{queue} + T_\text{inference\_server},
 \caption{Сравнительный анализ клиентского и серверного подходов}
 \label{tab:clientserver}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{lll}
+\begin{tabular}{|l|l|l|}
 \hline
 \textbf{Критерий} & \textbf{Клиентский (WASM / WebGPU)} & \textbf{Серверный (API)} \\
 \hline
 Задержка вывода         & 95–268~мс WASM; 121–189~мс WebGPU (детерминированная) & 20–500+~мс (стохастическая) \\
+\hline
 Сетевая зависимость     & Только при первой загрузке                & Каждый запрос \\
+\hline
 Приватность данных      & Полная (данные не покидают устройство)    & Требует доверия провайдеру \\
+\hline
 Офлайн-функциональность & Да (после кэширования)                    & Нет \\
+\hline
 Качество модели         & Ограничено объёмом файла                  & Неограничено \\
+\hline
 Аппаратная зависимость  & Критическая (CPU/GPU клиента)             & Отсутствует \\
+\hline
 Первая загрузка         & 4{,}35–27{,}08~с                            & Не применимо \\
+\hline
 Масштабируемость        & Линейная (каждый клиент независим)        & Требует серверных ресурсов \\
+\hline
 Стоимость эксплуатации  & Нулевая после развёртывания               & Пропорциональна нагрузке \\
 \hline
 \end{tabular}%
