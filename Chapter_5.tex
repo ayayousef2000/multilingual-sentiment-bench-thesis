@@ -13,9 +13,9 @@
 Экспорт в ONNX выполнялся через TorchScript-экспортёр (opset~=~14) с объявлением динамических осей по размерности батча и длине последовательности; целостность графа верифицировалась тройкой проверок: onnx.checker.check\_model, утверждение версии опсета и вывод модели на фиктивном батче через onnxruntime. Квантование FP32~$\rightarrow$~INT8 осуществлялось посредством ORTQuantizer с конфигурацией weight\_type=QInt8, per\_channel=False – динамическое поэлементное квантование, совместимое с бэкендом ONNX Runtime Web (WASM); поканальное квантование (per\_channel=True) не поддерживается ORT Web версии до 1.20 и намеренно не применялось~\cite{dettmers2022llmint8,gholami2021quantization}. Объём файла дообученной модели сократился с 541{,}4~МБ (FP32) до 135{,}8~МБ (INT8), что соответствует редукции на 74{,}9\%; для предобученного студента аналогичная процедура даёт 136{,}0~МБ (редукция 74{,}9\%). Итоговые артефакты дообученной модели с токенизатором опубликованы на HuggingFace Hub под идентификатором ayayousef/distilbert-multilingual-sentiment-finetuned. Программный стек этапа дообучения и экспорта включал Python~3.x, onnxruntime~1.20.1, transformers~4.47.1, optimum~1.24.0, scikit-learn~1.6.1. Для оценки компромисса между точностью и вычислительной эффективностью сформирован реестр из восьми конфигураций – четыре архитектуры в двух режимах точности весов (FP32 и INT8):
 
 \begin{enumerate}
-    \item XLM-RoBERTa Twitter (onnx-community) – 270~млн параметров, 1\,112{,}5~/ 279{,}3~МБ~\cite{barbieri2022xlmroberta};
-    \item mBERT Uncased Sentiment (Xenova) – 167~млн параметров, 669{,}7~/ 168{,}6~МБ~\cite{devlin2019bert};
-    \item DistilmBERT Student (Xenova) – 134~млн параметров, 541{,}4~/ 136{,}0~МБ, базовая линия до дообучения~\cite{sanh2019distilbert};
+    \item XLM-RoBERTa Twitter (onnx-community) – 270~млн параметров, 1\,112{,}5~/ 279{,}3~МБ~\cite{barbieri2022xlmroberta},
+    \item mBERT Uncased Sentiment (Xenova) – 167~млн параметров, 669{,}7~/ 168{,}6~МБ~\cite{devlin2019bert},
+    \item DistilmBERT Student (Xenova) – 134~млн параметров, 541{,}4~/ 136{,}0~МБ, базовая линия до дообучения~\cite{sanh2019distilbert},
     \item DistilmBERT Fine-tuned (ayayousef) – 134~млн параметров, 541{,}4~/ 135{,}8~МБ, целевая дообученная модель.
 \end{enumerate}
 
