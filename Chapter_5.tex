@@ -93,7 +93,7 @@ XLM-RoBERTa (onnx-community, FP32)    & 270 & 1\,112{,}5 & 27{,}08  & 281{,}06 &
 
 При увеличении размера батча соотношение инвертируется. Тестирование на корпусе из 150 англоязычных образцов (Benchmark Lab, модель DistilmBERT FT FP32) показало среднюю задержку на образец: 121~мс при включённом WebGPU против 154~мс в режиме WASM~– выигрыш в $\times$1{,}27 объясняется тем, что при пакетной обработке накладные расходы на передачу данных распределяются по большему числу образцов, а графический конвейер полностью загружается параллельной работой~\cite{jia2024empowering} (рисунок~\ref{fig:webgpu_bench_compare}). Диапазон индивидуальных задержек составил 52{,}2–241~мс для WebGPU и 47{,}1–341~мс для WASM; более узкий верхний предел в WebGPU-режиме указывает на отсутствие выбросов, характерных для непредсказуемых пауз JIT-компилятора V8 в WASM-бэкенде. Точность классификации совпала для обоих бэкендов (72{,}0\%), подтвердив, что замена провайдера исполнения не влияет на качество предсказаний.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \parbox{0.49\textwidth}{%
         \centering
@@ -157,7 +157,7 @@ DistilmBERT Student (Xenova, INT8) & 0{,}5513 & 0{,}4932 & 0{,}4177 & 0{,}3455 &
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{f1_macro_wasm_all8}
+    \includegraphics[width=0.9\textwidth]{f1_macro_wasm_all8}
     \caption{F1-macro по модели и языку, бэкенд WASM}
     \label{fig:f1_wasm_all8}
 \end{figure}
@@ -266,7 +266,7 @@ DistilmBERT FT INT8 выходит на первое место (индекс 0{
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{browser_score_ranking}
+    \includegraphics[width=\textwidth]{browser_score_ranking}
     \caption{Ранжирование конфигураций по индексу Browser Score}
     \label{fig:browser_score}
 \end{figure}

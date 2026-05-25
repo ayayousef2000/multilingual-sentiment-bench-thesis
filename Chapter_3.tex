@@ -48,12 +48,12 @@ WebGPU предоставляет прямой доступ к compute shaders, 
     \centering
     \parbox{0.48\textwidth}{%
         \centering
-        \includegraphics[width=0.373\textwidth]{webgpu_blocked_int8}\\[6pt]
+        \includegraphics[width=0.423\textwidth]{webgpu_blocked_int8}\\[6pt]
         а) WebGPU заблокирован при INT8}%
     \hfill
     \parbox{0.48\textwidth}{%
         \centering
-        \includegraphics[width=0.38\textwidth]{webgpu_enabled_fp32}\\[6pt]
+        \includegraphics[width=0.43\textwidth]{webgpu_enabled_fp32}\\[6pt]
         б) WebGPU активен при FP32}\\[10pt]
     \caption{Компонент WebGpuPanel}
     \label{fig:webgpu_panel}
@@ -98,7 +98,7 @@ ONNX Runtime Web (ORT Web) – браузерная реализация кро�
 
 Пользовательский интерфейс реализован на базе React с применением хуков useState, useEffect, useRef, useCallback и useTransition~\cite{xu2024ondevice}. Приложение структурировано как трёхуровневое SPA: уровень представления (Presentation Layer) – компоненты BenchmarkView и PlaygroundView – отвечает за отображение результатов; уровень оркестрации (Orchestration Layer) – ClassifierContext и хук useBenchmark – управляет взаимодействием с воркером и хранением персистентных результатов; вычислительное ядро (Computation Layer) целиком функционирует в фоновом потоке classifier.worker.ts (рисунок~\ref{fig:spa_architecture}).
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{spa_architecture}
     \caption{Трёхуровневая архитектура клиентского SPA}

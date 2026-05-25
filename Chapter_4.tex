@@ -36,7 +36,7 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{images/реестр-нейросетевых-моделей.png}
+    \includegraphics[width=0.9\textwidth]{images/реестр-нейросетевых-моделей.png}
     \caption{Реестр нейросетевых моделей в интерфейсе выбора конфигурации}
     \label{fig:реестр-нейросетевых-моделей}
 \end{figure}
@@ -45,16 +45,16 @@
 
 На рисунке~\ref{fig:мобильный-интерфейс} представлен мобильный интерфейс приложения (Android, Microsoft Edge): режим Playground (слева) и режим Benchmark Lab (справа). На обоих снимках панель WebGpuPanel фиксирует статус Not supported, подтверждая корректность механизма зондирования detectWebGpu() на устройствах без поддержки WebGPU~\cite{jia2024empowering}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \parbox{0.48\textwidth}{%
         \centering
-        \includegraphics[width=0.3\textwidth]{images/мобильный-интерфейс-playground}\\[6pt]
+        \includegraphics[width=0.31\textwidth]{images/мобильный-интерфейс-playground}\\[6pt]
         а) Режим Playground}%
     \hfill
     \parbox{0.48\textwidth}{%
         \centering
-        \includegraphics[width=0.3\textwidth]{images/мобильный-интерфейс-benchmark}\\[6pt]
+        \includegraphics[width=0.31\textwidth]{images/мобильный-интерфейс-benchmark}\\[6pt]
         б) Режим Benchmark Lab}\\[10pt]
     \caption{Мобильный интерфейс приложения (Android, Microsoft Edge)}
     \label{fig:мобильный-интерфейс}
@@ -100,9 +100,9 @@
 
 Подсистема визуализации обновляется в реальном времени: панель BenchmarkStatsPanel отображает агрегированные показатели задержки, потребления памяти, времени «холодного старта» и точности классификации, пересчитываемые функцией computeStats после каждого поступившего результата. Диаграмма рассеяния компонента BenchmarkChart иллюстрирует квадратичную зависимость $O(n^2)$ задержки вывода от длины входной последовательности: точки выстраиваются в параболическую огибающую, наклон которой существенно различается для полноразрядной и квантованной конфигураций~\cite{wang2024anatomizing, jia2024empowering}. Таблица ResultsTable обеспечивает построчный просмотр образцов с визуальной индикацией корректности предсказания, позволяя выявлять категории входных данных, на которых конкретная конфигурация модели систематически ошибается. На рисунке~\ref{fig:интерфейс-лабораторного-стенда} представлен интерфейс режима Benchmark Lab по завершении прогона на английском корпусе (150~образцов, модель DistilBERT Fine-tuned INT8): сводная панель метрик, диаграмма рассеяния и постатейная таблица результатов.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/webgpu_bench_off.png}
+    \includegraphics[width=\textwidth]{images/webgpu_bench_off.png}
     \caption{Интерфейс режима Benchmark Lab по завершении прогона}
     \label{fig:интерфейс-лабораторного-стенда}
 \end{figure}
