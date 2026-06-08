@@ -26,19 +26,49 @@
 %%% Headings Style (Chapter, Section, Subsection) %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \setsecnumdepth{subsection}
-\renewcommand*{\chapterheadstart}{}
-\renewcommand*{\printchaptername}{}
-\renewcommand*{\chapnumfont}{\normalfont\bfseries}
-\renewcommand*{\afterchapternum}{\hspace{1em}}
-\renewcommand*{\printchaptertitle}{\normalfont\bfseries\centering\MakeUppercase}
+
+\makeatletter
+\newbool{mem@starred@chapter}
+\pretocmd{\@schapter}{\booltrue{mem@starred@chapter}}{}{}
+\pretocmd{\@chapter}{\boolfalse{mem@starred@chapter}}{}{}
+\pretocmd{\tableofcontents}{\booltrue{mem@starred@chapter}}{}{}
+\pretocmd{\listoffigures}{\booltrue{mem@starred@chapter}}{}{}
+\pretocmd{\listoftables}{\booltrue{mem@starred@chapter}}{}{}
+
+\makechapterstyle{mythesis}{%
+  \renewcommand*{\chapterheadstart}{}
+  \renewcommand*{\printchaptername}{}
+  \renewcommand*{\chapnumfont}{\normalfont\bfseries}
+  \renewcommand*{\printchapternum}{}
+  \renewcommand*{\afterchapternum}{}
+  \renewcommand*{\printchaptertitle}[1]{%
+    \normalfont\bfseries%
+    \ifbool{mem@starred@chapter}{%
+      \begin{center}\MakeUppercase{##1}\end{center}\vspace{-0.8\baselineskip}%
+    }{%
+      \noindent\hspace{1.25cm}\MakeUppercase{\thechapter\hspace{1em}##1}\par%
+    }}
+  \setlength{\beforechapskip}{0pt}
+  \setlength{\afterchapskip}{6pt}
+}
+\makeatother
+\chapterstyle{mythesis}
+
+\AtBeginDocument{\parindent=1.25cm}
 
 % --- SECTION SETTINGS ---
-\setsecindent{\parindent}
-\setsecheadstyle{\raggedright\normalfont\bfseries}
+\setsecindent{0pt}
+\setsecheadstyle{%
+  \raggedright\normalfont\bfseries
+  \parshape 2 1.25cm \dimexpr\textwidth-1.25cm\relax 0pt \textwidth
+}
 
 % --- SUBSECTION SETTINGS ---
-\setsubsecindent{\parindent}
-\setsubsecheadstyle{\raggedright\normalfont}
+\setsubsecindent{0pt}
+\setsubsecheadstyle{%
+  \raggedright\normalfont\bfseries
+  \parshape 2 1.25cm \dimexpr\textwidth-1.25cm\relax 0pt \textwidth
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Table of Contents (ToC) Settings %%%
@@ -163,12 +193,16 @@
     isbn=true,
 ]{biblatex}
 
+\DefineBibliographyStrings{russian}{
+  urlseen = {дата обращения},
+}
+
 %% --- Remove italic from author names ---
 \renewcommand*{\mkgostheading}[1]{#1}
 
 %% --- Remove monospace from DOI/URL ---
 \renewcommand{\UrlFont}{\rmfamily\normalsize}
-\DeclareFieldFormat{url}{\textnormal{\url{#1}}}
+\DeclareFieldFormat{url}{\mkbibacro{URL}\addcolon\space\href{#1}{\nolinkurl{#1}}}
 \DeclareFieldFormat{eprint}{\textnormal{#1}}
 
 \DeclareDelimFormat{bibinitdelim}{}
@@ -198,6 +232,16 @@
 \usepackage{textcomp}
 \usepackage[version=4]{mhchem}
 \usepackage{amsmath}
+\usepackage{ragged2e}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Equation spacing (etoolbox — bypass memoir overrides) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{etoolbox}
+\BeforeBeginEnvironment{equation}{\vspace{0pt}}
+\AfterEndEnvironment{equation}{\vspace{0pt}}
+\BeforeBeginEnvironment{figure}{\vspace{8pt}}
+\BeforeBeginEnvironment{table}{\vspace{6pt}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% ALL spacing forced here — single AtBeginDocument, nothing can override %%%
@@ -217,19 +261,19 @@
     \setlength{\parskip}{0pt}%
     %% --- Chapter heading spacing ---
     \setlength{\beforechapskip}{0pt}%
-    \setlength{\afterchapskip}{6pt}%
+    \setlength{\afterchapskip}{1pt}%
     %% --- Section spacing ---
-    \setlength{\beforesecskip}{18pt}%
-    \setlength{\aftersecskip}{6pt}%
+    \setlength{\beforesecskip}{1pt}%
+    \setlength{\aftersecskip}{1pt}%
     %% --- Subsection spacing ---
     \setlength{\beforesubsecskip}{18pt}%
     \setlength{\aftersubsecskip}{6pt}%
     %% --- Float spacing ---
-    \setlength{\abovecaptionskip}{6pt}%
-    \setlength{\belowcaptionskip}{0pt}%
-    \setlength{\textfloatsep}{3pt plus 1pt minus 1pt}%
-    \setlength{\floatsep}{6pt plus 1pt minus 1pt}%
-    \setlength{\intextsep}{6pt plus 1pt minus 1pt}%
+    \setlength{\abovecaptionskip}{0pt}%
+    \setlength{\belowcaptionskip}{-2pt}%
+    \setlength{\textfloatsep}{0pt}%
+    \setlength{\floatsep}{0pt}%
+    \setlength{\intextsep}{0pt}%
     %% --- Force all floats to place here ---
     \floatplacement{figure}{H}%
     \floatplacement{table}{H}%

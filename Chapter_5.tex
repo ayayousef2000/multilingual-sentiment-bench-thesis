@@ -21,10 +21,13 @@
 
 Все модели загружались из HuggingFace Hub в ONNX-формате и запускались через ONNX Runtime Web непосредственно в браузере. Тестирование охватывало два бэкенда: WASM-пасс (CPUExecutionProvider) – все восемь конфигураций (FP32 и INT8); WebGPU-пасс (WebGPUExecutionProvider) – четыре FP32-модели, поскольку браузерный WebGPU не поддерживает квантованные INT8-ядра ONNX Runtime Web~\cite{wang2024anatomizing}. Вывод модели проводился батчами размером 32 образца; задержка регистрировалась средствами Performance API браузера на уровне батча. Каждая конфигурация тестировалась на трёх независимых языковых выборках по 7\,500 образцов на язык (итого 22\,500 записей на модель), идентичных для всех конфигураций, поскольку тестовые разбиения сохранялись в рамках пайплайна дообучения и загружались без повторной выборки.
 
-Качественная группа метрик включает точность классификации (Accuracy) и макроусреднённую $F_1$-меру:
-\[
-\text{Macro}\;F_1 = \frac{1}{C} \sum_{i=1}^{C} \frac{2\,P_i\,R_i}{P_i + R_i},
-\]
+Качественная группа метрик включает точность классификации (Accuracy) и макроусреднённую $F_1$-меру~\eqref{eq:f1_macro}:
+
+\begin{equation}
+    \text{Macro}\;F_1 = \frac{1}{C} \sum_{i=1}^{C} \frac{2\,P_i\,R_i}{P_i + R_i},
+    \label{eq:f1_macro}
+\end{equation}
+
 где $\text{Macro}\;F_1$~– макроусреднённая $F_1$-мера; $C$~– число классов ($C = 3$); $P_i$~– точность (Precision) для $i$-го класса; $R_i$~– полнота (Recall) для $i$-го класса. Макроусреднение принято в качестве основного агрегата, поскольку в отличие от взвешенного среднего оно равноправно учитывает все три класса вне зависимости от частотности – что обеспечивает сопоставимость результатов между языковыми сегментами в условиях потенциально неравномерного распределения классов, а также при объединении корпусов в кросс-языковом анализе. Производительностная группа включает среднюю задержку вывода модели, время загрузки модели и файловый объём. В качестве расчётного индекса эффективности для браузерного развёртывания применяется Browser Score~=~$0{,}5 \cdot \hat{F}_1 + 0{,}5 \cdot \widehat{(1/L)}$, где $\hat{F}_1$ – нормированное на диапазон $[0, 1]$ значение Overall F1-macro, а $\widehat{(1/L)}$ – нормированная обратная средняя задержка вывода~\cite{xu2024ondevice}.
 
 \section{Характеристика аппаратного окружения и оценка производительности инференса}
@@ -36,7 +39,7 @@
 
 \begin{table}[ht]
 \centering
-\caption{Сравнительный анализ производительности вывода модели и размера файлов}
+\caption{Производительность и размеры файлов моделей, бэкенд WASM}
 \label{tab:latency}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
@@ -86,8 +89,7 @@ XLM-RoBERTa (onnx-community, FP32)    & 270 & 1\,112{,}5 & 27{,}08  & 281{,}06 &
         \centering
         \includegraphics[width=0.49\textwidth]{webgpu_playground_off}\\[6pt]
         \small б) WASM: 151~мс, score~0{,}9563}\\[10pt]
-    \caption{Playground: задержка при единичном запросе,
-    WebGPU vs.\ WASM (DistilmBERT FT FP32).}
+    \caption{Playground: WebGPU vs.\ WASM (DistilmBERT FT FP32)}
     \label{fig:webgpu_playground_compare}
 \end{figure}
 
@@ -104,7 +106,7 @@ XLM-RoBERTa (onnx-community, FP32)    & 270 & 1\,112{,}5 & 27{,}08  & 281{,}06 &
         \centering
         \includegraphics[width=0.49\textwidth]{webgpu_bench_off}\\[6pt]
         б) WASM: 154~мс/обр., 47{,}1–341~мс}\\[10pt]
-    \caption{Benchmark Lab: средняя задержка при пакетной обработке, WebGPU vs.\ WASM (150 обр., DistilmBERT FT FP32).}
+    \caption{Benchmark Lab: WebGPU vs.\ WASM (DistilmBERT FT FP32)}
     \label{fig:webgpu_bench_compare}
 \end{figure}
 
@@ -124,7 +126,7 @@ XLM-RoBERTa (onnx-community, FP32)    & 270 & 1\,112{,}5 & 27{,}08  & 281{,}06 &
 
 \begin{table}[H]
 \centering
-\caption{Кросс-языковое сравнение точности и Macro F1-Score (WASM-бэкенд)}
+\caption{Точность и F1 моделей по языкам, бэкенд WASM}
 \label{tab:quality}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
@@ -153,7 +155,7 @@ DistilmBERT Student (Xenova, INT8) & 0{,}5513 & 0{,}4932 & 0{,}4177 & 0{,}3455 &
 
 Наибольшие значения метрик зафиксированы для DistilmBERT FT FP32: Overall Accuracy~=~0{,}7231, Overall F1-macro~=~0{,}7233; INT8-аналог уступает на $\Delta$F1~=~$-$0{,}0009, подтверждая эффективность дообучения на трёхъязычном корпусе~\cite{hasan2024ensemble}. XLM-RoBERTa при наибольшем числе параметров достигает лишь F1-macro 0{,}5281 — ниже обеих mBERT-конфигураций — из-за несоответствия домена: модель дообучалась на Twitter, тестовые корпуса представляют рецензионный стиль~\cite{barbieri2022xlmroberta}. Студент без дообучения показывает F1-macro 0{,}4237–0{,}4282 (INT8 и FP32), что отражает несовместимость исходной разметки с трёхклассовой тестовой схемой.
 
-Рисунок~\ref{fig:f1_wasm_all8} содержит значения F1-macro по всем восьми конфигурациям и трём языкам для WASM; рисунок~\ref{fig:f1_webgpu_fp32} — аналогичные данные для WebGPU (только FP32), подтверждая неизменность метрик при смене провайдера.
+Рисунок~\ref{fig:f1_wasm_all8} содержит значения F1-macro по всем восьми конфигурациям и трём языкам для WASM.
 
 \begin{figure}[H]
     \centering
@@ -161,6 +163,8 @@ DistilmBERT Student (Xenova, INT8) & 0{,}5513 & 0{,}4932 & 0{,}4177 & 0{,}3455 &
     \caption{F1-macro по модели и языку, бэкенд WASM}
     \label{fig:f1_wasm_all8}
 \end{figure}
+
+рисунок~\ref{fig:f1_webgpu_fp32} — аналогичные данные для WebGPU (только FP32), подтверждая неизменность метрик при смене провайдера.
 
 \begin{figure}[H]
     \centering
@@ -210,7 +214,7 @@ DistilmBERT Student (Xenova, INT8) & 0{,}6114 & 0{,}1831 & 0{,}6852 & 0{,}5124 &
 
 \begin{table}[ht]
 \centering
-\caption{Влияние квантования на точность и задержку DistilmBERT Fine-tuned}
+\caption{Влияние квантования на точность и задержку DistilmBERT FT}
 \label{tab:quantisation}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
@@ -233,8 +237,8 @@ ALL & 0{,}7231 & 0{,}7222 & $-$0{,}0009 & 0{,}7233 & 0{,}7224 & $-$0{,}0009 & 13
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\textwidth]{quantisation_impact_wasm}
-    \caption{Влияние квантования FP32$\,\rightarrow\,$INT8 на точность, F1-macro и задержку, бэкенд WASM.}
+    \includegraphics[width=\textwidth]{quantisation_impact_wasm}
+    \caption{Влияние квантования FP32$\,\rightarrow\,$INT8, бэкенд WASM}
     \label{fig:quant_impact}
 \end{figure}
 
