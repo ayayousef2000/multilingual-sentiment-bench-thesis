@@ -46,7 +46,8 @@
     \ifbool{mem@starred@chapter}{%
       \begin{center}\MakeUppercase{##1}\end{center}\vspace{-0.8\baselineskip}%
     }{%
-      \noindent\hspace{1.25cm}\MakeUppercase{\thechapter\hspace{1em}##1}\par%
+      \noindent\parshape 2 1.25cm \dimexpr\textwidth-1.25cm\relax 0pt \textwidth\relax%
+\justifying\MakeUppercase{\thechapter\hspace{1em}##1}\par%
     }}
   \setlength{\beforechapskip}{0pt}
   \setlength{\afterchapskip}{6pt}
@@ -59,7 +60,7 @@
 % --- SECTION SETTINGS ---
 \setsecindent{0pt}
 \setsecheadstyle{%
-  \raggedright\normalfont\bfseries
+  \justifying\normalfont\bfseries
   \parshape 2 1.25cm \dimexpr\textwidth-1.25cm\relax 0pt \textwidth
 }
 
